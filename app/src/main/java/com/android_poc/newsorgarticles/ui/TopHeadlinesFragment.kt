@@ -5,8 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android_poc.newsorgarticles.R
 import com.android_poc.newsorgarticles.databinding.FragmentTopHeadlinesBinding
 import com.android_poc.newsorgarticles.util.AppConstants.Companion.TAG
@@ -47,12 +50,25 @@ class TopHeadlinesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val newsListViewModel by activityViewModels<NewsListViewModel>()
+        val newsArticleRecyclerAdapter = NewsArticleListRecyclerAdapter(arrayListOf(),requireContext())
+        binding?.rvNewsArticleList?.layoutManager = LinearLayoutManager(activity)
+        binding?.rvNewsArticleList?.itemAnimator = DefaultItemAnimator()
+        binding?.rvNewsArticleList?.adapter = newsArticleRecyclerAdapter
+        binding?.contentLoader?.show()
         newsListViewModel.getTopHeadlinesFromNewsOrg()
         newsListViewModel.getApiCallFlag().observe(viewLifecycleOwner,{
             android.util.Log.d(TAG, "onViewCreated: network call flag = "+it)
+            if(!it){
+
+                Toast.makeText(activity,"Something went wrong",Toast.LENGTH_LONG).show()
+            }
+            binding?.contentLoader?.hide()
         })
         newsListViewModel.getTopHeadLinesFromRepo().observe(viewLifecycleOwner,{
             android.util.Log.d(TAG, "onViewCreated: top headlines are = "+it)
+            if(it.isNotEmpty()){
+                newsArticleRecyclerAdapter.setNewsArticlesFromResp(it)
+            }
         })
     }
 
