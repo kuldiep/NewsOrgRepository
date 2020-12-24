@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/newsOrgArticleListFragment">
+    app:startDestination="@id/topHeadlinesFragment">
 
 
     <fragment
-        android:id="@+id/newsOrgArticleListFragment"
-        android:name="com.android_poc.newsorgarticles.ui.NewsOrgArticleListFragment"
-        android:label="fragment_news_org_article_list"
-        tools:layout="@layout/fragment_news_org_article_list" />
+        android:id="@+id/topHeadlinesFragment"
+        android:name="com.android_poc.newsorgarticles.ui.TopHeadlinesFragment"
+        android:label="fragment_top_headlines"
+        tools:layout="@layout/fragment_top_headlines" />
     <action
         android:id="@+id/navigateNewsDetailFragment"
         app:destination="@id/newsDetailFragment"

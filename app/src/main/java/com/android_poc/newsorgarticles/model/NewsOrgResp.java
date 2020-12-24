@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-class NewsOrgResp {
+public class NewsOrgResp {
     @SerializedName("status")
     private String status;
     @SerializedName("totalResults")
