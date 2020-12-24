@@ -14,6 +14,7 @@ import com.android_poc.newsorgarticles.R
 import com.android_poc.newsorgarticles.databinding.FragmentTopHeadlinesBinding
 import com.android_poc.newsorgarticles.util.AppConstants.Companion.TAG
 import com.android_poc.newsorgarticles.viewmodel.NewsListViewModel
+import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,7 +60,6 @@ class TopHeadlinesFragment : Fragment() {
         newsListViewModel.getApiCallFlag().observe(viewLifecycleOwner,{
             android.util.Log.d(TAG, "onViewCreated: network call flag = "+it)
             if(!it){
-
                 Toast.makeText(activity,"Something went wrong",Toast.LENGTH_LONG).show()
             }
             binding?.contentLoader?.hide()
@@ -67,6 +67,8 @@ class TopHeadlinesFragment : Fragment() {
         newsListViewModel.getTopHeadLinesFromRepo().observe(viewLifecycleOwner,{
             android.util.Log.d(TAG, "onViewCreated: top headlines are = "+it)
             if(it.isNotEmpty()){
+                it.let {
+                    it.sortedWith(compareBy { it.title }) }
                 newsArticleRecyclerAdapter.setNewsArticlesFromResp(it)
             }
         })

@@ -2,7 +2,9 @@ package com.android_poc.newsorgarticles.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Articles {
+import java.io.Serializable;
+
+public class Articles implements Serializable {
     @SerializedName("source")
     private Source source;
     @SerializedName("author")

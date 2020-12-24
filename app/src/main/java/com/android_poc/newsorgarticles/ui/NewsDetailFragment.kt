@@ -5,7 +5,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebChromeClient
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.databinding.DataBindingUtil
 import com.android_poc.newsorgarticles.R
+import com.android_poc.newsorgarticles.databinding.FragmentNewsDetailBinding
+import com.android_poc.newsorgarticles.util.AppConstants
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,6 +28,7 @@ class NewsDetailFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var binding:FragmentNewsDetailBinding?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +41,30 @@ class NewsDetailFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_news_detail, container, false)
+        val view =  inflater.inflate(R.layout.fragment_news_detail, container, false)
+        binding = DataBindingUtil.bind(view)
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding?.newsDetailWebView?.loadUrl(requireArguments().getString(AppConstants.ARTICLE_URL,"www.google.com"))
+        val webSettings = binding?.newsDetailWebView?.settings
+        webSettings?.javaScriptEnabled = true
+        binding?.newsDetailWebView?.webViewClient = WebViewClient()
+        binding?.newsDetailWebView?.getSettings()?.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+
+        binding?.newsDetailWebView?.webChromeClient = object : WebChromeClient(){
+            override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                super.onProgressChanged(view, newProgress)
+                if(newProgress<100){
+                    binding?.webPageLoader?.show()
+                }else{
+                    binding?.webPageLoader?.hide()
+                }
+
+            }
+        }
     }
 
     companion object {

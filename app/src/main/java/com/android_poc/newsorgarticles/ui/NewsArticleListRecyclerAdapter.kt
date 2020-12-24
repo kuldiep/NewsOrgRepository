@@ -1,6 +1,7 @@
 package com.android_poc.newsorgarticles.ui
 
 import android.content.Context
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import com.android_poc.newsorgarticles.BR
 import com.android_poc.newsorgarticles.R
 import com.android_poc.newsorgarticles.databinding.NewsItemBinding
 import com.android_poc.newsorgarticles.model.Articles
+import com.android_poc.newsorgarticles.util.AppConstants
 import com.bumptech.glide.Glide
 
 class NewsArticleListRecyclerAdapter(var newsArticleList : List<Articles>,val context: Context) : RecyclerView.Adapter<NewsArticleListRecyclerAdapter.NewsArticleListViewHolder>() {
@@ -21,12 +23,15 @@ class NewsArticleListRecyclerAdapter(var newsArticleList : List<Articles>,val co
         fun bind(newsArticle: Articles) {
             newsItemBinding.setVariable(BR.NewsOrgObj, newsArticle)
             newsItemBinding.executePendingBindings()
-            if(newsArticle.urlToImage!=null) {
-                Glide.with(context).load(newsArticle.urlToImage).into(newsItemBinding.ivArticleBgImg)
-            }
-            newsItemBinding.root.setOnClickListener(object:View.OnClickListener{
+            Glide.with(context).load(newsArticle.urlToImage).placeholder(R.drawable.ic_launcher_foreground)
+                    .error(R.drawable.ic_launcher_foreground)
+                    .centerCrop().into(newsItemBinding.ivArticleBgImg)
+
+            newsItemBinding.root.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-                    p0?.findNavController()?.navigate(R.id.navigateNewsDetailFragment)
+                    val bundle = Bundle()
+                    bundle.putString(AppConstants.ARTICLE_URL,newsArticle.url)
+                    p0?.findNavController()?.navigate(R.id.navigateNewsDetailFragment,bundle)
                 }
             })
         }
