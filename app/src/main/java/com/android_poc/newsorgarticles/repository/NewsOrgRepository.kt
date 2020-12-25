@@ -15,6 +15,7 @@ import retrofit2.Response
 
 class NewsOrgRepository private constructor(){
     private var mutableNewsArticleLiveDataList = MutableLiveData<List<Articles>>()
+
     private object HOLDER {
         val INSTANCE = NewsOrgRepository()
     }

@@ -59,7 +59,8 @@ class NewsDetailFragment : Fragment() {
                 super.onProgressChanged(view, newProgress)
                 if(newProgress<100){
                     binding?.webPageLoader?.show()
-                }else{
+                }
+                if(newProgress == 100){
                     binding?.webPageLoader?.hide()
                 }
 
