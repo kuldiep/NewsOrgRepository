@@ -1,20 +1,21 @@
 package com.android_poc.newsorgarticles.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android_poc.newsorgarticles.R
 import com.android_poc.newsorgarticles.databinding.FragmentTopHeadlinesBinding
 import com.android_poc.newsorgarticles.util.AppConstants.Companion.TAG
 import com.android_poc.newsorgarticles.viewmodel.NewsListViewModel
-import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -26,11 +27,13 @@ private const val ARG_PARAM2 = "param2"
  * Use the [TopHeadlinesFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class TopHeadlinesFragment : Fragment() {
+class TopHeadlinesFragment : Fragment(), View.OnClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private var binding:FragmentTopHeadlinesBinding?=null
+    private var binding: FragmentTopHeadlinesBinding? = null
+    private lateinit var newsListViewModel:NewsListViewModel
+    private lateinit var newsArticleRecyclerAdapter: NewsArticleListRecyclerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,27 +53,20 @@ class TopHeadlinesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val newsListViewModel by activityViewModels<NewsListViewModel>()
-        val newsArticleRecyclerAdapter = NewsArticleListRecyclerAdapter(arrayListOf(),requireContext())
+        binding?.btnRetry?.setOnClickListener(this)
+        newsListViewModel = ViewModelProvider(this).get(NewsListViewModel::class.java)
+        newsArticleRecyclerAdapter = NewsArticleListRecyclerAdapter(arrayListOf(), requireContext())
         binding?.rvNewsArticleList?.layoutManager = LinearLayoutManager(activity)
         binding?.rvNewsArticleList?.itemAnimator = DefaultItemAnimator()
         binding?.rvNewsArticleList?.adapter = newsArticleRecyclerAdapter
-        binding?.contentLoader?.show()
-        newsListViewModel.getTopHeadlinesFromNewsOrg()
-        newsListViewModel.getApiCallFlag().observe(viewLifecycleOwner,{
-            android.util.Log.d(TAG, "onViewCreated: network call flag = "+it)
-            if(!it){
-                Toast.makeText(activity,"Something went wrong",Toast.LENGTH_LONG).show()
+
+        showAndFetchTopHeadlines()
+        newsListViewModel.getApiCallFlag().observe(viewLifecycleOwner, {
+            if (!it) {
+                Toast.makeText(activity,"Something went wrong try again",Toast.LENGTH_SHORT).show()
+                binding?.btnRetry?.visibility = View.VISIBLE
             }
             binding?.contentLoader?.hide()
-        })
-        newsListViewModel.getTopHeadLinesFromRepo().observe(viewLifecycleOwner,{
-            android.util.Log.d(TAG, "onViewCreated: top headlines are = "+it)
-            if(it.isNotEmpty()){
-                it.let {
-                    it.sortedWith(compareBy { it.title }) }
-                newsArticleRecyclerAdapter.setNewsArticlesFromResp(it)
-            }
         })
     }
 
@@ -92,5 +88,25 @@ class TopHeadlinesFragment : Fragment() {
                         putString(ARG_PARAM2, param2)
                     }
                 }
+    }
+
+    private fun showAndFetchTopHeadlines() {
+        try {
+            binding?.contentLoader?.show()
+            newsListViewModel.getTopHeadlinesFromNewsOrg()
+            newsListViewModel.getTopHeadLinesFromRepo().observe(viewLifecycleOwner, {
+                Log.d(TAG, "showAndFetchTopHeadlines: top headlines are = $it")
+                if (it.isNotEmpty()) {
+                    binding?.btnRetry?.visibility = View.GONE
+                    newsArticleRecyclerAdapter.setNewsArticlesFromResp(it)
+                }
+            })
+        }catch (ex:Exception){
+            Log.e(TAG,"Exception..",ex)
+        }
+    }
+
+    override fun onClick(p0: View?) {
+        showAndFetchTopHeadlines()
     }
 }

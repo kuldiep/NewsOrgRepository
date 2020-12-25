@@ -11,6 +11,7 @@ class NewsListViewModel : BaseViewModel() {
     fun getTopHeadlinesFromNewsOrg(){
         val apiCallStatusListener = object : ApiCallStatusListener {
             override fun isApiCallSuccessfull(apiFlag: Boolean) {
+
                 mutableLiveDataApiFlag.value = apiFlag
             }
         }

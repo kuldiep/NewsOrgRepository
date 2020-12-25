@@ -4,7 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class Articles implements Serializable {
+import androidx.annotation.Nullable;
+
+public class Articles implements Serializable{
     @SerializedName("source")
     private Source source;
     @SerializedName("author")
@@ -100,4 +102,6 @@ public class Articles implements Serializable {
         sb.append('}');
         return sb.toString();
     }
+
+
 }
